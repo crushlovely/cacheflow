@@ -1,0 +1,13 @@
+{
+  "name": "cacheflow",
+  "version": "0.1.0",
+  "description": "A JavaScript library to work with the window.applicationCache event API",
+  "main": "cacheflow.js",
+  "keywords": [
+    "applicationCache",
+    "offline",
+    "caching"
+  ],
+  "author": "Michael Phillips <mlp.brooklyn@gmail.com>",
+  "license": "BSD"
+}

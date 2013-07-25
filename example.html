@@ -1,0 +1,19 @@
+<html>
+<head>
+  <title>My cacheFlow Page</title>
+</head>
+<body>
+
+  <script src="cacheFlow.js"></script>
+
+  <script>
+    new cacheFlow({
+      events: ['cached', 'checking', 'downloading'],
+      callbacks: function () {console.log(arguments)},
+      lang: {
+        cached: 'caching, son'
+      }
+    });
+  </script>
+</body>
+</html>
