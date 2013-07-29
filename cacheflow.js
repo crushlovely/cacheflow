@@ -25,6 +25,11 @@ function cacheFlow(options) {
       validEvents = ['checking', 'noupdate', 'downloading', 'progress', 'cached', 'updateready', 'obsolete', 'error'],
 
       //
+      // These are events that represent the last step in the caching sequence
+
+      finalEvents = ['noupdate', 'cached', 'updateready', 'obsolete', 'error'],
+
+      //
       // default language for each event
 
       defaultLang = {
@@ -68,6 +73,7 @@ function cacheFlow(options) {
     }
 
     eventNames = filteredEvents;
+
   }
 
 
@@ -94,6 +100,8 @@ function cacheFlow(options) {
   }
 
 
+  var callbackArgs = {};
+
   //
   // Loop over each of the events being hooked into
 
@@ -112,29 +120,44 @@ function cacheFlow(options) {
         // callback specified in the options object
 
         callbackIsGlobal = (typeof callbacks === 'function'),
-        callback = (callbackIsGlobal) ? callbacks : callbacks[eventName],
+        callback = (callbackIsGlobal) ? callbacks : callbacks[eventName];
 
         //
         // predefine arguments array
 
-        args = (callbackIsGlobal) ? [lang[eventName], eventName] : [lang[eventName]];
+        callbackArgs[eventName] = (callbackIsGlobal) ? [null, lang[eventName], eventName] : [null, lang[eventName]];
+
+        //
+        // callback
+
+        var callbackFunc = function (e) {
+
+          var eventName = e.type,
+              args = callbackArgs[eventName],
+
+              //
+              // is the event the end of the chain?
+
+              isFinalEvent = (finalEvents.indexOf(eventName) !== -1) ? true : false;
+
+          e.isFinalEvent = isFinalEvent;
+
+          //
+          // inject the event object as the first argument
+
+          args.splice(0, 1, e);
+
+          //
+          // execute the callback with arguments
+
+          callback.apply(null, args);
+        };
 
 
     //
     // execute the callback, passing in the language copy as the argument
 
-    api[callbackName] = function (e) {
-
-      //
-      // inject the event object as the first argument
-
-      args.splice(0, 0, e);
-
-      //
-      // execute the callback with arguments
-
-      callback.apply(_this, args);
-    };
+    api[callbackName] = callbackFunc;
   }
 
 }
